@@ -1,0 +1,75 @@
+{
+  "size": 0,
+  "aggs": {
+    "2": {
+      "terms": { "field": "sensor.display.keyword",
+        "size": 10,
+        "order": { "1": "desc" }
+      },
+      "aggs": {
+        "1": { "avg": { "field": "value" }},
+        "3": {
+          "date_range": {
+            "field": "@timestamp",
+            "ranges": [
+              { "from": "2017-12-08T19:42:00", "to": "2017-12-09T20:38:00" },
+              { "to": "2017-12-08T19:42:00", "from": "2017-12-08T01:02:00" },
+              { "to": "2017-12-08T01:02:00", "from": "2017-12-06T19:13:00" }
+            ]
+          },
+          "aggs": { "1": { "avg": { "field": "value" } } }
+        }
+      }
+    }
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "sensor.display": "WoodSouth(2) Battery"
+                }
+              },
+              {
+                "match_phrase": {
+                  "sensor.display": "WoodNorth(2) Battery"
+                }
+              },
+              {
+                "match_phrase": {
+                  "sensor.display": "Stairs(2) Battery"
+                }
+              },
+              {
+                "match_phrase": {
+                  "sensor.display": "White(2) Battery"
+                }
+              },
+              {
+                "match_phrase": {
+                  "sensor.display": "Boiler(0) Pipe MA"
+                }
+              },
+              {
+                "match_phrase": {
+                  "sensor.display": "Villebon(.) Station"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "match_phrase": {
+            "sensor.type": {
+              "query": "Temp"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

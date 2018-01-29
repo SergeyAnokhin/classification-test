@@ -1,0 +1,37 @@
+{
+  "size": 0,
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "sensor.display.keyword",
+        "size": 5,
+        "order": { "1": "desc" }
+      },
+      "aggs": {
+        "1": { "avg": { "field": "value" } },
+        "3": {
+          "date_range": {
+            "field": "@timestamp",
+            "ranges": [
+              { "from": "2017-12-08T19:42:00", "to": "2017-12-09T20:38:00" },
+              { "to": "2017-12-08T19:42:00", "from": "2017-12-08T01:02:00" },
+              { "to": "2017-12-08T01:02:00", "from": "2017-12-06T19:13:00" }
+            ]
+          },
+          "aggs": { "1": { "avg": { "field": "value" } } }
+        }
+      }
+    }
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_phrase": {
+            "sensor.display.keyword": { "query": "Boiler(0) Pipe MA" }
+          }
+        }
+      ]
+    }
+  }
+}
