@@ -10,7 +10,7 @@ class ElasticSearchHelper:
 
     
     def Search(self, request):
-        es = Elasticsearch([{'host': 'search-es-domain-vu4rnb36e6pnimhdaaxry4jpyy.us-east-2.es.amazonaws.com', 'port': 80}])
+        es = Elasticsearch([{'host': 'search-es-domain-.us-east-2.es.amazonaws.com', 'port': 80}])
         # es.get(index='history-2017.12.05', doc_type='measure', id='AWAmTXnszcI0DKot8mcZ')
 
         result = es.search(index="history-*", body=request)
