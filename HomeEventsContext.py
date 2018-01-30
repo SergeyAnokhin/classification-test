@@ -38,3 +38,9 @@ class HomeEventsContext:
     def ApplyEvent(self, line, event):
         i = event[1]
         line[i] = 1
+
+    def getX(self):
+        return np.asarray(self.images_X).reshape(len(self.images_Y), 60)
+
+    def getY(self):
+        return np.asarray(self.images_Y)
