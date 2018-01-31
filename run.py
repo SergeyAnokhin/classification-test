@@ -122,16 +122,15 @@ for c in classifiers:
     start_time = timeit.default_timer()
     clf.fit(X, Y)
     elapsed = timeit.default_timer() - start_time
-    pred_Y = clf.predict(X)
     selfscore = clf.score(X, Y)
-    matched = [i for i, j in zip(Y, pred_Y) if i != j]
-    if len(matched) != 0:
-        #display('### ' + c + ' => ' + ('%.2f' % selfscore).lstrip('0') + ' (' + elapsed + ' sec)')
-        print('# {:30} => {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+    if selfscore < 1:
+        print('# {:25} => {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+        #pred_Y = clf.predict(X)
+        #matched = [i for i, j in zip(Y, pred_Y) if i != j]
         #display(len(matched))
         #display(pred_Y)
     else:
-        print('# {:30} => OK {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+        print('# {:25} => OK {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
 
 #X = StandardScaler().fit_transform(X)
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4)
