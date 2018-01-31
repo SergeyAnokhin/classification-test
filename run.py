@@ -18,9 +18,9 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from HomeEventsContext import HomeEventsContext
 
 classifiers = {
-        "Neural Net(Adam, a0.1)":     
-            MLPClassifier(alpha=.1, max_iter=500, solver='adam'), # , verbose=10
-        "Neural Net(Adam, a0.01)":     
+        "Neural Net(Adam, a.1)":     
+            MLPClassifier(alpha=.1, max_iter=1000, solver='adam'), # , verbose=10
+        "Neural Net(Adam, a.01)":     
             MLPClassifier(alpha=.01, max_iter=500, solver='adam'), # , verbose=10
         "Neural Net(Adam)":     
             MLPClassifier(alpha=1, max_iter=500, solver='adam'), # , verbose=10
@@ -28,21 +28,24 @@ classifiers = {
             GaussianNB(),
         "RBF SVM":              
             SVC(gamma=2, C=1),
-        "Neural Net(Sgd)":      
-            MLPClassifier(alpha=1, max_iter=500, solver='sgd'), # , verbose=10
+        # "Neural Net(Sgd)":      
+        #     MLPClassifier(alpha=1e-2, max_iter=1000, solver='sgd'), # , verbose=10
+        "Neural Net(Sgd, tol)":      
+            MLPClassifier(alpha=1e-2, tol=1e-4, max_iter=500, solver='sgd', random_state=1,
+                    learning_rate_init=.1), # , verbose=10
         "Neural Net(Adam)":     
             MLPClassifier(alpha=1, max_iter=500, solver='adam'), # , verbose=10
         #"Linear SVM":           SVC(kernel="linear", C=0.025),
-        "Nearest Neighbors":    
-            KNeighborsClassifier(3),
+        #"Nearest Neighbors":    
+        #    KNeighborsClassifier(3),
         "Gaussian Process":     
             GaussianProcessClassifier(1.0 * RBF(1.0)),
-        "Random Forest":        
-            RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
+        # "Random Forest":        
+        #     RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
         "Decision Tree":        
             DecisionTreeClassifier(max_depth=5),
-        "AdaBoost":             
-            AdaBoostClassifier(),
+        # "AdaBoost":             
+        #     AdaBoostClassifier(),
         #"QDA":                  QuadraticDiscriminantAnalysis(),
     }
 # print(classifiers)
@@ -87,37 +90,8 @@ ctx.AddSequence('master_come', {
 # mather & childrens
 ctx.AddSequence('masterChild_come', {
     0 : corridor1Pir,
-    5 : [hall0Pir, hall0door],
-    9 : cameraFront
-})
-# mather & childrens
-ctx.AddSequence('masterChild_come', {
-    0 : corridor1Pir,
-    5 : [hall0Pir, hall0door],
-    6 : cameraFront,
-    7 : cameraFront,
-    9 : cameraFront
-})
-# mather & childrens
-ctx.AddSequence('masterChild_come', {
-    0 : corridor1Pir,
-    5 : [hall0Pir, hall0door],
-    6 : cameraFront,
-    9 : cameraFront
-})
-# mather & childrens
-ctx.AddSequence('masterChild_come', {
-    0 : corridor1Pir,
     3 : [hall0Pir, hall0door],
     5 : cameraFront,
-    9 : cameraFront
-})
-# mather & childrens
-ctx.AddSequence('masterChild_come', {
-    0 : corridor1Pir,
-    4 : [hall0Pir, hall0door],
-    6 : cameraFront,
-    7 : cameraFront,
     9 : cameraFront
 })
 # kat
@@ -132,7 +106,9 @@ ctx.AddSequence('anomalie', {
 X = ctx.getX()
 Y = ctx.getY()
 
-print('######### SELF TEST #########')
+print('##############################################')
+print('################## SELF TEST #################')
+print('##############################################')
 
 for c in classifiers:
 
@@ -141,36 +117,41 @@ for c in classifiers:
     clf.fit(X, Y)
     elapsed = timeit.default_timer() - start_time
     selfscore = clf.score(X, Y)
+    loss = 0
+    if hasattr(clf, 'loss_'):
+        loss = clf.loss_
     if selfscore < 1:
-        print('# {:25} => {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+        print('# {:22} => {:.2f} +-{:.2f} ({:.2f} sec)'.format(c, selfscore, loss, elapsed))
         pred_Y = clf.predict(X)
         unmatched = [i for i, j in zip(Y, pred_Y) if i != j]
         print(unmatched)
     else:
-        print('# {:25} => OK {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+        print('# {:22} => OK {:.2f} +-{:.2f} ({:.2f} sec)'.format(c, selfscore, loss, elapsed))
 
-print('######### TEST SEQUENCES #########')
+print('##############################################')
+print('############## TEST SEQUENCES ################')
+print('##############################################')
 
 tst = HomeEventsContext()
-tst.AddSequence('anomalie', {
-    0 : hall0Pir,
-})
+# tst.AddSequence('anomalie', {
+#     0 : hall0Pir,
+# })
 
-tst.AddSequence('alert', {
-    0 : corridor1Pir,
-    1 : [hall0Pir, hall0door],
-    9 : cameraFront
-})
+# tst.AddSequence('alert', {
+#     0 : corridor1Pir,
+#     1 : [hall0Pir, hall0door],
+#     9 : cameraFront
+# })
 
-tst.AddSequence('alert', {
-    0 : [corridor1Pir, hall0Pir, hall0door],
-    9 : cameraFront
-})
+# tst.AddSequence('alert', {
+#     0 : [corridor1Pir, hall0Pir, hall0door],
+#     9 : cameraFront
+# })
 
-tst.AddSequence('alert', {
-    0 : [corridor1Pir, hall0Pir, hall0door],
-    5 : cameraFront
-})
+# tst.AddSequence('alert', {
+#     0 : [corridor1Pir, hall0Pir, hall0door],
+#     5 : cameraFront
+# })
 
 # mather & childrens
 tst.AddSequence('masterChild_come', {
@@ -183,22 +164,26 @@ tst.AddSequence('masterChild_come', {
 
 X_tst = tst.getX()
 Y_tst = tst.getY()
+print(Y_tst)
 
 for c in classifiers:
 
     clf = classifiers[c]
-    start_time = timeit.default_timer()
     #clf.fit(X, Y)
     tstscore = clf.score(X_tst, Y_tst)
     if tstscore < 1:
-        print('# {:25} => {:.2f} ({:.2f} sec)'.format(c, tstscore, elapsed))
+        print('# {:25} => {:.2f}'.format(c, tstscore))
         Y_pred = clf.predict(X_tst)
-        elapsed = timeit.default_timer() - start_time
         unmatched = [i for i, j in zip(Y_tst, Y_pred) if i != j]
-        print('Unmatched : {}'.format(len(unmatched)))
+        print('  - Unmatched : {}'.format(len(unmatched)))
         print(Y_pred)
     else:
-        print('# {:25} => OK {:.2f} ({:.2f} sec)'.format(c, tstscore, elapsed))
+        print('# {:25} => OK {:.2f}'.format(c, tstscore))
+    if hasattr(clf, 'predict_proba'):
+        Y_proba = clf.predict_proba(X_tst)
+        print(clf.classes_)
+        print(Y_proba)
+    print('--------------------------------')
 
 
 
