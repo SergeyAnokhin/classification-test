@@ -98,23 +98,42 @@ ctx.AddSequence('anomalie', {
 
 X = ctx.getX()
 Y = ctx.getY()
+ctx.clean()
 
 tst = HomeEventsContext()
 tst.AddSequence('anomalie', {
     0 : hall0Pir,
 })
 
-X_pred1 = [[1, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0]]
-#X_pred = np.asarray(images_X[0]).reshape(1, 60)
+# X_pred1 = [[1, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0],
+#  [0, 0, 0, 0, 0, 0]]
+X_tst = tst.getX()
+Y_tst = tst.getY()
+
+for c in classifiers:
+
+    clf = classifiers[c]
+    start_time = timeit.default_timer()
+    clf.fit(X, Y)
+    elapsed = timeit.default_timer() - start_time
+    selfscore = clf.score(X, Y)
+    if selfscore < 1:
+        print('# {:25} => {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+        Y_pred = clf.predict(X_tst)
+        matched = [i for i, j in zip(Y_tst, Y_pred) if i != j]
+        print('Unmatched : {}'.format(len(matched)))
+        print(Y_pred)
+    #else:
+    #    print('# {:25} => OK {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+
 
 for c in classifiers:
 
