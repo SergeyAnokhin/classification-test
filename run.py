@@ -18,14 +18,6 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from HomeEventsContext import HomeEventsContext
 
 classifiers = {
-        "RBF SVM":              
-            SVC(gamma=2, C=1),
-        "Decision Tree":        
-            DecisionTreeClassifier(max_depth=5),
-        "Random Forest":        
-            RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
-        "Neural Net(Adam)":     
-            MLPClassifier(alpha=1, max_iter=500, solver='adam'), # , verbose=10
         "Neural Net(Adam, a0.1)":     
             MLPClassifier(alpha=.1, max_iter=500, solver='adam'), # , verbose=10
         "Neural Net(Adam, a0.01)":     
@@ -34,13 +26,21 @@ classifiers = {
             MLPClassifier(alpha=1, max_iter=500, solver='adam'), # , verbose=10
         "Naive Bayes":          
             GaussianNB(),
+        "RBF SVM":              
+            SVC(gamma=2, C=1),
         "Neural Net(Sgd)":      
             MLPClassifier(alpha=1, max_iter=500, solver='sgd'), # , verbose=10
+        "Neural Net(Adam)":     
+            MLPClassifier(alpha=1, max_iter=500, solver='adam'), # , verbose=10
         #"Linear SVM":           SVC(kernel="linear", C=0.025),
         "Nearest Neighbors":    
             KNeighborsClassifier(3),
         "Gaussian Process":     
             GaussianProcessClassifier(1.0 * RBF(1.0)),
+        "Random Forest":        
+            RandomForestClassifier(max_depth=5, n_estimators=10, max_features=1),
+        "Decision Tree":        
+            DecisionTreeClassifier(max_depth=5),
         "AdaBoost":             
             AdaBoostClassifier(),
         #"QDA":                  QuadraticDiscriminantAnalysis(),
@@ -53,68 +53,134 @@ cameraBack = ('cameraBack', 3)
 corridor1Pir = ('corridor1Pir', 4)
 
 ctx = HomeEventsContext()
-
+# alert Front
 ctx.AddSequence('alert', {
     0 : corridor1Pir,
     1 : [hall0Pir, hall0door],
     9 : cameraFront
 })
+# alert Front Fast
+ctx.AddSequence('alert', {
+    0 : [corridor1Pir, hall0Pir, hall0door],
+    5 : cameraFront
+})
 
+# alert back
 ctx.AddSequence('alert', {
     0 : corridor1Pir,
     1 : hall0Pir,
     9 : cameraBack
 })
-
+# alert Front and back
 ctx.AddSequence('alert', {
     0 : corridor1Pir,
     1 : hall0Pir,
     8 : cameraBack,
     9 : cameraFront
 })
-
+# father
 ctx.AddSequence('master_come', {
     0 : corridor1Pir,
     5 : [hall0Pir, hall0door],
     6 : cameraFront
 })
-
+# mather & childrens
 ctx.AddSequence('masterChild_come', {
     0 : corridor1Pir,
     5 : [hall0Pir, hall0door],
     9 : cameraFront
 })
-
+# mather & childrens
+ctx.AddSequence('masterChild_come', {
+    0 : corridor1Pir,
+    5 : [hall0Pir, hall0door],
+    6 : cameraFront,
+    7 : cameraFront,
+    9 : cameraFront
+})
+# mather & childrens
+ctx.AddSequence('masterChild_come', {
+    0 : corridor1Pir,
+    5 : [hall0Pir, hall0door],
+    6 : cameraFront,
+    9 : cameraFront
+})
+# mather & childrens
+ctx.AddSequence('masterChild_come', {
+    0 : corridor1Pir,
+    3 : [hall0Pir, hall0door],
+    5 : cameraFront,
+    9 : cameraFront
+})
+# mather & childrens
+ctx.AddSequence('masterChild_come', {
+    0 : corridor1Pir,
+    4 : [hall0Pir, hall0door],
+    6 : cameraFront,
+    7 : cameraFront,
+    9 : cameraFront
+})
+# kat
 ctx.AddSequence('anomalie', {
     0 : corridor1Pir,
 })
-
+# kat
 ctx.AddSequence('anomalie', {
     0 : hall0Pir,
 })
 
-#for i, n in zip(ctx.images_X, ctx.images_Y):
-#    display(n, i)
-
 X = ctx.getX()
 Y = ctx.getY()
-ctx.clean()
+
+print('######### SELF TEST #########')
+
+for c in classifiers:
+
+    clf = classifiers[c]
+    start_time = timeit.default_timer()
+    clf.fit(X, Y)
+    elapsed = timeit.default_timer() - start_time
+    selfscore = clf.score(X, Y)
+    if selfscore < 1:
+        print('# {:25} => {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+        pred_Y = clf.predict(X)
+        unmatched = [i for i, j in zip(Y, pred_Y) if i != j]
+        print(unmatched)
+    else:
+        print('# {:25} => OK {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+
+print('######### TEST SEQUENCES #########')
 
 tst = HomeEventsContext()
 tst.AddSequence('anomalie', {
     0 : hall0Pir,
 })
 
-# X_pred1 = [[1, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0],
-#  [0, 0, 0, 0, 0, 0]]
+tst.AddSequence('alert', {
+    0 : corridor1Pir,
+    1 : [hall0Pir, hall0door],
+    9 : cameraFront
+})
+
+tst.AddSequence('alert', {
+    0 : [corridor1Pir, hall0Pir, hall0door],
+    9 : cameraFront
+})
+
+tst.AddSequence('alert', {
+    0 : [corridor1Pir, hall0Pir, hall0door],
+    5 : cameraFront
+})
+
+# mather & childrens
+tst.AddSequence('masterChild_come', {
+    0 : corridor1Pir,
+    3 : [hall0Pir, hall0door],
+    4 : cameraFront,
+    9 : cameraFront
+})
+
+
 X_tst = tst.getX()
 Y_tst = tst.getY()
 
@@ -122,34 +188,19 @@ for c in classifiers:
 
     clf = classifiers[c]
     start_time = timeit.default_timer()
-    clf.fit(X, Y)
-    elapsed = timeit.default_timer() - start_time
-    selfscore = clf.score(X, Y)
-    if selfscore < 1:
-        print('# {:25} => {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+    #clf.fit(X, Y)
+    tstscore = clf.score(X_tst, Y_tst)
+    if tstscore < 1:
+        print('# {:25} => {:.2f} ({:.2f} sec)'.format(c, tstscore, elapsed))
         Y_pred = clf.predict(X_tst)
-        matched = [i for i, j in zip(Y_tst, Y_pred) if i != j]
-        print('Unmatched : {}'.format(len(matched)))
+        elapsed = timeit.default_timer() - start_time
+        unmatched = [i for i, j in zip(Y_tst, Y_pred) if i != j]
+        print('Unmatched : {}'.format(len(unmatched)))
         print(Y_pred)
-    #else:
-    #    print('# {:25} => OK {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
-
-
-for c in classifiers:
-
-    clf = classifiers[c]
-    start_time = timeit.default_timer()
-    clf.fit(X, Y)
-    elapsed = timeit.default_timer() - start_time
-    selfscore = clf.score(X, Y)
-    if selfscore < 1:
-        print('# {:25} => {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
-        #pred_Y = clf.predict(X)
-        #matched = [i for i, j in zip(Y, pred_Y) if i != j]
-        #display(len(matched))
-        #display(pred_Y)
     else:
-        print('# {:25} => OK {:.2f} ({:.2f} sec)'.format(c, selfscore, elapsed))
+        print('# {:25} => OK {:.2f} ({:.2f} sec)'.format(c, tstscore, elapsed))
+
+
 
 #X = StandardScaler().fit_transform(X)
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4)

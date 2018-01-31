@@ -19,9 +19,9 @@ class HomeEventsContext:
     images_X = []
     images_Y = []
 
-    def clean(self):
-        self.images_X = []
-        self.images_Y = []
+    def __init__(self):
+        del self.images_X[:]
+        del self.images_Y[:]       
 
     def AddSequence(self, name, seq):
         self.images_Y.append(name)
