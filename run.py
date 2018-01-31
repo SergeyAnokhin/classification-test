@@ -56,50 +56,50 @@ cameraBack = ('cameraBack', 3)
 corridor1Pir = ('corridor1Pir', 4)
 
 ctx = HomeEventsContext()
-# alert Front
-ctx.AddSequence('alert', {
+# ALRT Front
+ctx.AddSequence('ALRT', {
     0 : corridor1Pir,
     1 : [hall0Pir, hall0door],
     9 : cameraFront
 })
-# alert Front Fast
-ctx.AddSequence('alert', {
+# ALRT Front Fast
+ctx.AddSequence('ALRT', {
     0 : [corridor1Pir, hall0Pir, hall0door],
     5 : cameraFront
 })
 
-# alert back
-ctx.AddSequence('alert', {
+# ALRT back
+ctx.AddSequence('ALRT', {
     0 : corridor1Pir,
     1 : hall0Pir,
     9 : cameraBack
 })
-# alert Front and back
-ctx.AddSequence('alert', {
+# ALRT Front and back
+ctx.AddSequence('ALRT', {
     0 : corridor1Pir,
     1 : hall0Pir,
     8 : cameraBack,
     9 : cameraFront
 })
 # father
-ctx.AddSequence('master_come', {
+ctx.AddSequence('MSTR', {
     0 : corridor1Pir,
     5 : [hall0Pir, hall0door],
     6 : cameraFront
 })
 # mather & childrens
-ctx.AddSequence('masterChild_come', {
+ctx.AddSequence('MRCH', {
     0 : corridor1Pir,
     3 : [hall0Pir, hall0door],
     5 : cameraFront,
     9 : cameraFront
 })
 # kat
-ctx.AddSequence('anomalie', {
+ctx.AddSequence('ANML', {
     0 : corridor1Pir,
 })
 # kat
-ctx.AddSequence('anomalie', {
+ctx.AddSequence('ANML', {
     0 : hall0Pir,
 })
 
@@ -133,28 +133,28 @@ print('############## TEST SEQUENCES ################')
 print('##############################################')
 
 tst = HomeEventsContext()
-# tst.AddSequence('anomalie', {
+# tst.AddSequence('ANML', {
 #     0 : hall0Pir,
 # })
 
-# tst.AddSequence('alert', {
-#     0 : corridor1Pir,
-#     1 : [hall0Pir, hall0door],
-#     9 : cameraFront
-# })
+tst.AddSequence('ALRT', {
+    0 : corridor1Pir,
+    1 : [hall0Pir, hall0door],
+    9 : cameraFront
+})
 
-# tst.AddSequence('alert', {
+# tst.AddSequence('ALRT', {
 #     0 : [corridor1Pir, hall0Pir, hall0door],
 #     9 : cameraFront
 # })
 
-# tst.AddSequence('alert', {
-#     0 : [corridor1Pir, hall0Pir, hall0door],
-#     5 : cameraFront
-# })
+tst.AddSequence('ALRT', {
+     0 : [corridor1Pir, hall0Pir, hall0door],
+     5 : cameraFront
+ })
 
 # mather & childrens
-tst.AddSequence('masterChild_come', {
+tst.AddSequence('MRCH', {
     0 : corridor1Pir,
     3 : [hall0Pir, hall0door],
     4 : cameraFront,
