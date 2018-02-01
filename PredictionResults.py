@@ -20,8 +20,9 @@ class PredictionResults:
     def displayResults(self):
         isOk = ' '
         if self.tstscore == 1:
-            isOk = ' OK'
-        print('# {:25} => {} {:.2f}'.format(self.name, isOk, self.tstscore))
+            print('# {:25} => OK'.format(self.name))
+        else:
+            print('# {:25} => {:.2f}'.format(self.name, self.tstscore))
 
 
         if self.tstscore < 1:
@@ -30,18 +31,25 @@ class PredictionResults:
             self.ph.array(self.Y_pred, '{:>12}', '')
 
         self.displayProbas()
-        print('-------------------------------------------')
+        print('--------------------------------------------')
 
     def displayProbas(self):
         if not hasattr(self.clf, 'predict_proba'):
             return
         Y_proba = self.clf.predict_proba(self.X_tst)
-        self.ph.array(self.clf.classes_, '{:<7}', '')
         for proba, pred, y_tst in zip(Y_proba, self.Y_pred, self.Y_tst):
-            print(' -- {} == {}'.format(pred, y_tst))
-            self.displayProba(proba)
-
-    def displayProba(self, proba):
+            ind_pred = self.clf.classes_.tolist().index(pred)
+            if pred == y_tst:
+                probability = proba[ind_pred]
+                print(' -- {} {:.2f} {}'.format(pred, 
+                    probability, '#' * int(round(probability * 30))))
+            else:
+                ind_tst = self.clf.classes_.tolist().index(y_tst)
+                print(' !! {} {:.2f} != {} {:.2f}'.format(pred, 
+                    proba[ind_pred], y_tst, proba[ind_tst]))
+ 
+    # display bar : ########
+    def displayProbaWithBar(self, proba):
         zipped = zip(proba, self.clf.classes_)
         for p, c in sorted(zipped, key = lambda t: t[0]):
             print('{} {:.4f} {}'.format(c, p, '#' * int(round(p * 40))))
