@@ -28,10 +28,21 @@ class PredictionResults:
             unmatched = [i for i, j in zip(self.Y_tst, self.Y_pred) if i != j]
             print('  - Unmatched : {}'.format(len(unmatched)))
             self.ph.array(self.Y_pred, '{:>12}', '')
-        if hasattr(self.clf, 'predict_proba'):
-            Y_proba = self.clf.predict_proba(self.X_tst)
-            self.ph.array(self.clf.classes_, '{:<7}', '')
-            for i in Y_proba:
-                self.ph.array(i, '{:.2f}', ' | ')
+
+        self.displayProbas()
         print('-------------------------------------------')
 
+    def displayProbas(self):
+        if not hasattr(self.clf, 'predict_proba'):
+            return
+        Y_proba = self.clf.predict_proba(self.X_tst)
+        self.ph.array(self.clf.classes_, '{:<7}', '')
+        for proba, pred, y_tst in zip(Y_proba, self.Y_pred, self.Y_tst):
+            print(' -- {} == {}'.format(pred, y_tst))
+            self.displayProba(proba)
+
+    def displayProba(self, proba):
+        zipped = zip(proba, self.clf.classes_)
+        for p, c in sorted(zipped, key = lambda t: t[0]):
+            print('{} {:.4f} {}'.format(c, p, '#' * int(round(p * 40))))
+        #self.ph.array(proba, '{:.2f}', ' | ')
