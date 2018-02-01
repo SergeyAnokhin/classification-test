@@ -16,6 +16,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 from HomeEventsContext import HomeEventsContext
 from ClassifierResults import ClassifierResults
+from PredictionResults import PredictionResults
 from printHelper import printHelper
 
 classifiers = {
@@ -158,26 +159,10 @@ print('Correct Classes : ')
 ph.array(Y_tst, '{:>12}', ',')
 
 for c in classifiers:
-
+    res = PredictionResults()
     clf = classifiers[c]
-    #clf.fit(X, Y)
-    tstscore = clf.score(X_tst, Y_tst)
-    if tstscore < 1:
-        print('# {:25} => {:.2f}'.format(c, tstscore))
-        Y_pred = clf.predict(X_tst)
-        unmatched = [i for i, j in zip(Y_tst, Y_pred) if i != j]
-        print('  - Unmatched : {}'.format(len(unmatched)))
-        ph.array(Y_pred, '{:>12}', '')
-    else:
-        print('# {:25} => OK {:.2f}'.format(c, tstscore))
-    if hasattr(clf, 'predict_proba'):
-        Y_proba = clf.predict_proba(X_tst)
-        ph.array(clf.classes_, '{:<7}', '')
-        for i in Y_proba:
-            ph.array(i, '{:.2f}', ' | ')
-    print('-------------------------------------------')
-
-
+    res.predict(clf, c, X_tst, Y_tst)
+    res.displayResults()
 
 #X = StandardScaler().fit_transform(X)
 #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4)
