@@ -16,6 +16,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 from HomeEventsContext import HomeEventsContext
 from ClassifierResults import ClassifierResults
+from printHelper import printHelper
 
 classifiers = {
         "Neural Net(Adam, a.1)":     
@@ -54,6 +55,7 @@ hall0door = ('hall0door', 1)
 cameraFront = ('cameraFront', 2)
 cameraBack = ('cameraBack', 3)
 corridor1Pir = ('corridor1Pir', 4)
+ph = printHelper()
 
 ctx = HomeEventsContext()
 # ALRT Front
@@ -152,7 +154,8 @@ tst.AddSequence('MRCH', {
 
 X_tst = tst.getX()
 Y_tst = tst.getY()
-print(Y_tst)
+print('Correct Classes : ')
+ph.array(Y_tst, '{:>12}', ',')
 
 for c in classifiers:
 
@@ -164,14 +167,15 @@ for c in classifiers:
         Y_pred = clf.predict(X_tst)
         unmatched = [i for i, j in zip(Y_tst, Y_pred) if i != j]
         print('  - Unmatched : {}'.format(len(unmatched)))
-        print(Y_pred)
+        ph.array(Y_pred, '{:>12}', '')
     else:
         print('# {:25} => OK {:.2f}'.format(c, tstscore))
     if hasattr(clf, 'predict_proba'):
         Y_proba = clf.predict_proba(X_tst)
-        print(clf.classes_)
-        print(Y_proba)
-    print('--------------------------------')
+        ph.array(clf.classes_, '{:<7}', '')
+        for i in Y_proba:
+            ph.array(i, '{:.2f}', ' | ')
+    print('-------------------------------------------')
 
 
 

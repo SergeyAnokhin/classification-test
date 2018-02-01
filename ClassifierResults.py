@@ -34,7 +34,7 @@ class ClassifierResults:
 
     def printTotal(self, name):
         isOk = ' '
-        if self.score = 1
+        if self.score == 1:
             isOk = ' OK'
         print('# {:22} =>{} {:.2f} +-{:.2f} ({:.2f} sec)'
             .format(name, isOk, self.score, self.loss, self.fit_elapsed))
