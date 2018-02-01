@@ -1,7 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-import timeit
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import make_moons, make_circles, make_classification
@@ -16,6 +15,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 from HomeEventsContext import HomeEventsContext
+from ClassifierResults import ClassifierResults
 
 classifiers = {
         "Neural Net(Adam, a.1)":     
@@ -111,22 +111,10 @@ print('################## SELF TEST #################')
 print('##############################################')
 
 for c in classifiers:
-
     clf = classifiers[c]
-    start_time = timeit.default_timer()
-    clf.fit(X, Y)
-    elapsed = timeit.default_timer() - start_time
-    selfscore = clf.score(X, Y)
-    loss = 0
-    if hasattr(clf, 'loss_'):
-        loss = clf.loss_
-    if selfscore < 1:
-        print('# {:22} => {:.2f} +-{:.2f} ({:.2f} sec)'.format(c, selfscore, loss, elapsed))
-        pred_Y = clf.predict(X)
-        unmatched = [i for i, j in zip(Y, pred_Y) if i != j]
-        print(unmatched)
-    else:
-        print('# {:22} => OK {:.2f} +-{:.2f} ({:.2f} sec)'.format(c, selfscore, loss, elapsed))
+    clfRes = ClassifierResults()
+    clfRes.fit(clf, X, Y)
+    clfRes.Display(c)
 
 print('##############################################')
 print('############## TEST SEQUENCES ################')
